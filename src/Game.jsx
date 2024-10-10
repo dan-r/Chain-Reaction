@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import Cell from './Cell';
 import { Button, Grid, Typography, Box } from '@mui/material';
 import './Game.css';
@@ -92,7 +92,7 @@ const Game = () => {
             } else {
                 endOfRound();
                 // setTimeout(endOfRound, 500);
-            }    
+            }
         }
     };
 
@@ -211,6 +211,11 @@ const Game = () => {
         return newHex;
     };
 
+    const playerLocationPath = () => {
+        const pathname = useLocation().pathname;
+        return pathname.substring(0, pathname.lastIndexOf('/', pathname.lastIndexOf('/')-1));
+    }
+
     return (
         <>
             <Box
@@ -253,14 +258,28 @@ const Game = () => {
                         <Typography variant="h6" color="white">
                             {winningPlayer} wins!
                         </Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleRestart}
-                            style={{ marginTop: '20px' }}
-                        >
-                            Restart Game
-                        </Button>
+                        <Grid container direction="column" spacing={2} alignItems="center">
+                            <Grid item key="restart">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleRestart}
+                                    style={{ marginTop: '20px' }}
+                                >
+                                    Restart Game
+                                </Button>
+                            </Grid>
+                            <Grid item key="back">
+                                <Link to={playerLocationPath()} style={{ textDecoration: 'none' }}>
+                                    <Button
+                                        variant="contained"
+                                        color="info"
+                                    >
+                                        Change Players
+                                    </Button>
+                                </Link>
+                            </Grid>
+                        </Grid>
                     </Box>
                 )}
             </Box>
