@@ -3,17 +3,25 @@
     width: 50px; /* Adjust this value to change the cell size */
     height: 50px; /* Adjust this value to change the cell size */
     border: 2px solid #ccc; /* Border color */
-    border-radius: 12px; /* Rounded corners */
+    border-radius: 9px !important; /* Rounded corners */
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 18px; /* Font size for the counter */
     font-weight: bold;
     user-select: none; /* Prevent text selection on click */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
     position: relative; /* Relative positioning for animation */
     overflow: hidden; /* Ensure content doesn't overflow the cell */
     cursor: pointer;
+}
+
+.cell-animated {
+    transition: background-color 0.5s, transform 0.5s !important; /* Smooth transition for background color */
+}
+
+.cell-container {
+    width: 54px;
+    height: 54px;
 }
 
 
@@ -47,49 +55,48 @@
     z-index: 2; /* Ensure counter is above any animations */
 }
 
-/* Animation class */
-.animating .counter {
-    z-index: 10; /* Bring the counter above everything during animation */
-}
-
 /* Explosion animations */
 .explode-up {
-    animation: explode-up-animation 0.5s forwards; /* Trigger the up explosion */
+    animation: explode-up-animation 0.5s ease; /* Trigger the up explosion */
+    z-index: 100;
 }
 
 .explode-down {
-    animation: explode-down-animation 0.5s forwards; /* Trigger the down explosion */
+    animation: explode-down-animation 0.5s ease; /* Trigger the down explosion */
+    z-index: 100;
 }
 
 .explode-left {
-    animation: explode-left-animation 0.5s forwards; /* Trigger the left explosion */
+    animation: explode-left-animation 0.5s ease; /* Trigger the left explosion */
+    z-index: 100;
 }
 
 .explode-right {
-    animation: explode-right-animation 0.5s forwards; /* Trigger the right explosion */
+    animation: explode-right-animation 0.5s ease; /* Trigger the right explosion */
+    z-index: 100;
 }
 
 /* Keyframes for up explosion */
 @keyframes explode-up-animation {
     0% {
-        transform: translateY(0);
-        opacity: 1; /* Start fully visible */
+        transform: translateY(100%);
+        opacity: 0; /* Start fully visible */
     }
     100% {
-        transform: translateY(-100%); /* Move up */
-        opacity: 0; /* Fade out */
+        transform: translateY(0%); /* Move up */
+        opacity: 1; /* Fade out */
     }
 }
 
 /* Keyframes for down explosion */
 @keyframes explode-down-animation {
     0% {
-        transform: translateY(0);
-        opacity: 1; /* Start fully visible */
+        transform: translateY(-100%);
+        opacity: 0; /* Start fully visible */
     }
     100% {
-        transform: translateY(100%); /* Move down */
-        opacity: 0; /* Fade out */
+        transform: translateY(0%); /* Move down */
+        opacity: 1; /* Fade out */
     }
 }
 
@@ -97,11 +104,11 @@
 @keyframes explode-left-animation {
     0% {
         transform: translateX(100%);
-        opacity: 1; /* Start fully visible */
+        opacity: 0; /* Start fully visible */
     }
     100% {
         transform: translateX(0%); /* Move left */
-        opacity: 0; /* Fade out */
+        opacity: 1; /* Fade out */
     }
 }
 
@@ -109,10 +116,10 @@
 @keyframes explode-right-animation {
     0% {
         transform: translateX(-100%);
-        opacity: 1; /* Start fully visible */
+        opacity: 0; /* Start fully visible */
     }
     100% {
         transform: translateX(0%); /* Move right */
-        opacity: 0; /* Fade out */
+        opacity: 1; /* Fade out */
     }
 }

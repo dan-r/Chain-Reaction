@@ -17,22 +17,24 @@ const Game = () => {
     const [winningPlayer, setWinningPlayer] = useState(null);
     const [placedCounters, setPlacedCounters] = useState(new Array(players).fill(0)); // Track placed counters for each player
     const [initialTurnComplete, setInitialTurnComplete] = useState(false); // Track if initial turns are complete
+    const [isAnimating, setIsAnimating] = useState(false); // Track if animations are in progress
 
     const rows = players === 2 ? 5 : 7;
     const cols = players === 2 ? 5 : 7;
 
     useEffect(() => {
         setBoard(
-            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null }))
+            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null }))
         );
         setGameOver(false);
         setWinningPlayer(null);
         setPlacedCounters(new Array(players).fill(0));
         setInitialTurnComplete(false); // Reset the initial turn flag
+        setIsAnimating(false); // Reset animation state
     }, [players]);
 
     const handleClick = (row, col) => {
-        if (gameOver) return;
+        if (gameOver || isAnimating) return; // Block user input during animations
 
         const cell = board[row][col];
         const currentColor = PLAYER_COLORS[currentPlayer];
@@ -64,53 +66,95 @@ const Game = () => {
 
             const newBoard = JSON.parse(JSON.stringify(board));
             newBoard[row][col].count++;
+            newBoard[row][col].explodeDirection = null;
+
+            const endOfRound = () => {
+                checkGameOver(newBoard);
+                setBoard(newBoard);
+
+                const playerCounters = getCountersCount(newBoard);
+                let nextPlayer = (currentPlayer + 1) % players;
+
+                while (playerCounters[nextPlayer] === 0) {
+                    nextPlayer = (nextPlayer + 1) % players;
+                }
+
+                setCurrentPlayer(nextPlayer);
+            }
 
             if (newBoard[row][col].count >= 4) {
-                explode(newBoard, row, col, currentColor);
-            }
-
-            setBoard(newBoard);
-            checkGameOver(newBoard); // Check win condition after placing a counter
-
-            const playerCounters = getCountersCount(newBoard);
-            let nextPlayer = (currentPlayer + 1) % players; // Get next player
-
-            while (playerCounters[nextPlayer] == 0) { // If player has no cells, skip
-                nextPlayer = (nextPlayer + 1) % players;
-            }
-
-            setCurrentPlayer(nextPlayer);
+                // Start the explosion animation sequence
+                setIsAnimating(true); // Block further user input
+                explode(newBoard, row, col, currentColor, () => {
+                    setIsAnimating(false); // Enable user input after all explosions finish
+                    endOfRound();
+                });
+            } else {
+                endOfRound();
+                // setTimeout(endOfRound, 500);
+            }    
         }
     };
 
-
-    const explode = (board, row, col, color) => {
+    // Modified explode function with animation and queueing logic
+    const explode = (board, row, col, color, onComplete) => {
         board[row][col].count = 0;
         board[row][col].color = null;
 
         const directions = [
-            [0, 1], [0, -1], [1, 0], [-1, 0]
+            [0, 1, 'right'], // Right
+            [0, -1, 'left'],  // Left
+            [1, 0, 'down'],   // Down
+            [-1, 0, 'up'],    // Up
         ];
 
-        directions.forEach(([dx, dy]) => {
+        const explosionQueue = [];
+
+        let moves = [];
+
+        // Collect all neighboring cells to explode into
+        directions.forEach(([dx, dy, direction]) => {
             const newRow = row + dx;
             const newCol = col + dy;
-
             if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                board[newRow][newCol].count++;
-                board[newRow][newCol].color = color;
-
-                if (board[newRow][newCol].count >= 4) {
-                    explode(board, newRow, newCol, color);
-                }
+                moves.push([newRow, newCol, direction]);
             }
         });
+        explosionQueue.push(moves);
+
+        // Sequentially handle each explosion with animation
+        const processExplosion = (index) => {
+            if (index >= explosionQueue.length) {
+                onComplete(); // Call completion callback after all explosions are done
+                return;
+            }
+            let moves = explosionQueue[index];
+            for (let i = 0; i < moves.length; i++) {
+
+                const [newRow, newCol, direction] = moves[i];
+                board[newRow][newCol].count++;
+                board[newRow][newCol].color = color;
+                board[newRow][newCol].explodeDirection = direction;
+                setBoard([...board]); // Trigger re-render to update explosion
+
+                setTimeout(() => {
+                    if (board[newRow][newCol].count >= 4) {
+                        explode(board, newRow, newCol, color, () => processExplosion(index + 1));
+                    } else {
+                        processExplosion(index + 1);
+                    }
+                }, 1000); // Delay to sync with the animation (500ms)
+
+            }
+
+        };
+
+        processExplosion(0); // Start the explosion sequence
     };
 
     // Return array of number of counters held by each player
     const getCountersCount = (board) => {
         const playerCounters = new Array(players).fill(0);
-
         board.forEach(row =>
             row.forEach(cell => {
                 if (cell.color) {
@@ -121,17 +165,16 @@ const Game = () => {
                 }
             })
         );
-
         return playerCounters;
     };
 
-    // Check if game over: all players have 0 squares except one
+    // Check if game is over
     const checkGameOver = (board) => {
         if (!initialTurnComplete) return false;
 
         const playerCounters = getCountersCount(board);
 
-        if (playerCounters.filter(c => c == 0).length == playerCounters.length - 1) {
+        if (playerCounters.filter(c => c === 0).length === playerCounters.length - 1) {
             setGameOver(true);
             setWinningPlayer(PLAYER_NAMES[playerCounters.findIndex(c => c > 0)]);
         }
@@ -139,49 +182,49 @@ const Game = () => {
 
     const handleRestart = () => {
         setBoard(
-            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null }))
+            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null }))
         );
         setGameOver(false);
         setWinningPlayer(null);
         setCurrentPlayer(0);
         setPlacedCounters(new Array(players).fill(0));
-        setInitialTurnComplete(false); // Reset the initial turn flag
+        setInitialTurnComplete(false);
+        setIsAnimating(false);
     };
 
     const darkenHex = (hex, factor) => {
         // Ensure hex is in the correct format
         hex = hex.replace('#', '');
-        
+
         // Convert hex to RGB
         let r = parseInt(hex.substring(0, 2), 16);
         let g = parseInt(hex.substring(2, 4), 16);
         let b = parseInt(hex.substring(4, 6), 16);
-    
+
         // Darken the color by reducing the RGB values
         r = Math.floor(r * (1 - factor));
         g = Math.floor(g * (1 - factor));
         b = Math.floor(b * (1 - factor));
-    
+
         // Convert RGB back to hex
         const newHex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-        
         return newHex;
-    }
+    };
 
     return (
         <>
-        <Box
-            sx={{
-                width: '100%',
-                height: '2000px',
-                backgroundColor: darkenHex(PLAYER_COLORS[currentPlayer], 0.25),
-                transition: 'background-color 0.5s ease', // Smooth transition effect
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                zIndex: -1000,
-            }}
-        />
+            <Box
+                sx={{
+                    width: '100%',
+                    height: '100vh',
+                    backgroundColor: darkenHex(PLAYER_COLORS[currentPlayer], 0.25),
+                    transition: 'background-color 0.5s ease',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    zIndex: -1000,
+                }}
+            />
             <Box sx={{ padding: 3 }}>
                 {/* <Typography variant="h5" gutterBottom>
                     Current Player: {PLAYER_NAMES[currentPlayer]}
@@ -195,6 +238,8 @@ const Game = () => {
                                     <Cell
                                         count={cell.count}
                                         color={cell.color}
+                                        explodeDirection={cell.explodeDirection}
+                                        initialTurnComplete={initialTurnComplete}
                                         onClick={() => handleClick(rowIndex, colIndex)}
                                     />
                                 </Grid>
@@ -205,7 +250,7 @@ const Game = () => {
 
                 {gameOver && (
                     <Box sx={{ marginTop: '20px', textAlign: 'center' }}>
-                        <Typography variant="h6" color="error">
+                        <Typography variant="h6" color="white">
                             {winningPlayer} wins!
                         </Typography>
                         <Button
