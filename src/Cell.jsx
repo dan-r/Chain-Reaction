@@ -41,11 +41,11 @@ const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, g
     }, [explodeDirection]);
 
     useEffect(() => {
-        if (!explodeDirection) {
+        if (!explodeDirection && (count != delayedCount || color != delayedColor)) {
             setDelayedColor(color);
             setDelayedCount(count);
         }
-    }, [count]);
+    }, [count, color]);
 
     return (
         <div className={`cell-container-${gridSize}`}>

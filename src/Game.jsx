@@ -125,7 +125,7 @@ const Game = () => {
         const explosionQueue = [];
 
         let moves = [];
-
+        
         // Collect all neighboring cells to explode into
         directions.forEach(([dx, dy, direction]) => {
             const newRow = row + dx;
@@ -138,11 +138,17 @@ const Game = () => {
 
         // Sequentially handle each explosion with animation
         const processExplosion = (index) => {
-            console.log(explosionQueue);
             if (index >= explosionQueue.length) {
                 onComplete(); // Call completion callback after all explosions are done
                 return;
             }
+
+            board.forEach(row => {
+                row.forEach(cell => {
+                    cell.explodeDirection = null;
+                });
+            });
+
             let moves = explosionQueue[index];
             for (let i = 0; i < moves.length; i++) {
 
