@@ -4,6 +4,7 @@ import Cell from './Cell';
 import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
 import { PLAYER_COLORS, PLAYER_NAMES } from './const';
+import CounterDisplay from './CounterDisplay';
 
 const Game = () => {
     const { players: playerCount } = useParams();
@@ -16,6 +17,7 @@ const Game = () => {
     const [placedCounters, setPlacedCounters] = useState(new Array(players).fill(0)); // Track placed counters for each player
     const [initialTurnComplete, setInitialTurnComplete] = useState(false); // Track if initial turns are complete
     const [isAnimating, setIsAnimating] = useState(false); // Track if animations are in progress
+    const [scores, setScores] = useState(new Array(players).fill(0));
 
     const gridSize = players === 2 ? 5 : 7;
 
@@ -35,6 +37,7 @@ const Game = () => {
         setPlacedCounters(new Array(players).fill(0));
         setInitialTurnComplete(false); // Reset the initial turn flag
         setIsAnimating(false); // Reset animation state
+        setScores(new Array(players).fill(0));
     }, [players]);
 
     const handleClick = (row, col) => {
@@ -81,6 +84,7 @@ const Game = () => {
             }
 
             setCurrentPlayer((currentPlayer + 1) % players);
+            setScores(getCountersCount(newBoard));
         } else {
             // Only allow adding to a cell that already holds their counter
             if (cell.color !== currentColor) return;
@@ -94,6 +98,8 @@ const Game = () => {
                 setBoard(newBoard);
 
                 const playerCounters = getCountersCount(newBoard);
+                setScores(playerCounters);
+
                 let nextPlayer = (currentPlayer + 1) % players;
 
                 while (playerCounters[nextPlayer] === 0) {
@@ -210,6 +216,7 @@ const Game = () => {
         setPlacedCounters(new Array(players).fill(0));
         setInitialTurnComplete(false);
         setIsAnimating(false);
+        setScores(new Array(players).fill(0));
     };
 
     const darkenHex = (hex, factor) => {
@@ -250,6 +257,7 @@ const Game = () => {
                     zIndex: -1000,
                 }}
             />
+            <CounterDisplay playerCounters={scores} players={players} />
             <Box sx={{ padding: 3 }} className="center-container">
                 <Grid container spacing={1} justifyContent="center" className="grid">
                     {board.map((row, rowIndex) => (
