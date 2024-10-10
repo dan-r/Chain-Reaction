@@ -13,7 +13,6 @@ const diceDots = (count) => {
 const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, gridSize, onClick }) => {
     const cellRefSprite = useRef(null); // Ref to the cell DOM element
     const cellRefTop = useRef(null);
-    const [isAnimating, setIsAnimating] = useState(false); // Local state to track if animation is happening
 
     const [delayedColor, setDelayedColor] = useState('#f0f0f0');
     const [delayedCount, setDelayedCount] = useState(0);
@@ -21,41 +20,31 @@ const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, g
     useEffect(() => {
         // When explodeDirection changes, trigger the animation
         if (explodeDirection) {
-            setIsAnimating(true);
-
             // Add the direction-specific animation class
             const cellElement = cellRefSprite.current;
             if (cellElement) {
                 cellElement.classList.add(`explode-${explodeDirection}`);
             }
 
-            // Remove the animation class after it completes (assuming 500ms duration)
-            const animationDuration = 510;
+            // Remove the animation class after it completes
             setTimeout(() => {
+                // Set the colour of the currently hidden cells
+                setDelayedColor(color);
+                setDelayedCount(count);
+                
+                // Reveal the hidden cell
                 if (cellElement) {
                     cellElement.classList.remove(`explode-${explodeDirection}`);
                 }
-                setIsAnimating(false); // Reset animation state
-
-            }, animationDuration);
+            }, 500);
         }
     }, [explodeDirection]);
 
     useEffect(() => {
-        // cellRefTop.current.classList.remove(`cell-animated`);
-        if (explodeDirection) {
-            setTimeout(() => {
-                setDelayedColor(color);
-                setDelayedCount(count);
-            // cellRefTop.current.classList.add(`cell-animated`);
-
-            }, 500)
-        } else {
+        if (!explodeDirection) {
             setDelayedColor(color);
             setDelayedCount(count);
-            // cellRefTop.current.classList.add(`cell-animated`);
         }
-
     }, [count]);
 
     return (
