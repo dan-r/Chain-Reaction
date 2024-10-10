@@ -3,9 +3,7 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import Cell from './Cell';
 import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
-
-const PLAYER_COLORS = ['#ff5f58', '#00c1ef', '#76c93e', '#ffbf2f'];
-const PLAYER_NAMES = ['Red', 'Blue', 'Green', 'Yellow'];
+import { PLAYER_COLORS, PLAYER_NAMES } from './const';
 
 const Game = () => {
     const { players: playerCount } = useParams();
