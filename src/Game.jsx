@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import Cell from './Cell';
-import { Button, Grid, Typography, Box } from '@mui/material';
+import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
 
 const PLAYER_COLORS = ['#ff5f58', '#00c1ef', '#76c93e', '#ffbf2f'];
@@ -267,36 +267,27 @@ const Game = () => {
                         </Grid>
                     ))}
                 </Grid>
-    
-                {gameOver && (
-                    <Box sx={{ marginTop: '20px', textAlign: 'center' }}>
-                        <Typography variant="h6" color="white">
-                            {winningPlayer} wins!
+
+                <Dialog open={gameOver} onClose={() => handleRestart()}>
+                    <DialogTitle>{winningPlayer} wins!</DialogTitle>
+                    <DialogContent>
+                        <Typography variant="body1" color="textSecondary">
+                            Thanks for playing!
                         </Typography>
-                        <Grid container direction="column" spacing={2} alignItems="center">
-                            <Grid item key="restart">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleRestart}
-                                    style={{ marginTop: '20px' }}
-                                >
-                                    Restart Game
-                                </Button>
-                            </Grid>
-                            <Grid item key="back">
-                                <Link to={playerLocationPath()} style={{ textDecoration: 'none' }}>
-                                    <Button
-                                        variant="contained"
-                                        color="info"
-                                    >
-                                        Change Players
-                                    </Button>
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Link to={playerLocationPath()}>
+                            <Button color="info">
+                                Change Players
+                            </Button>
+                        </Link>
+                        <Button onClick={() => {
+                            handleRestart();
+                        }} color="primary">
+                            Restart Game
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </>
     );
