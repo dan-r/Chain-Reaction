@@ -112,7 +112,6 @@ const Game = () => {
                 });
             } else {
                 endOfRound();
-                // setTimeout(endOfRound, 500);
             }
         }
     };
@@ -125,7 +124,7 @@ const Game = () => {
         const explosionQueue = [];
 
         let moves = [];
-        
+
         // Collect all neighboring cells to explode into
         directions.forEach(([dx, dy, direction]) => {
             const newRow = row + dx;
@@ -196,8 +195,8 @@ const Game = () => {
         const playerCounters = getCountersCount(board);
 
         if (playerCounters.filter(c => c === 0).length === playerCounters.length - 1) {
-            setGameOver(true);
             setWinningPlayer(PLAYER_NAMES[playerCounters.findIndex(c => c > 0)]);
+            setTimeout(() => { setGameOver(true) }, 1000);
         }
     };
 
