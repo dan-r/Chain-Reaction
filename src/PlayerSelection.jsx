@@ -17,7 +17,7 @@ const PlayerSelection = () => {
                     <Grid container direction="column" spacing={2} alignItems="center">
                         {[2, 3, 4].map((numPlayers) => (
                             <Grid item key={numPlayers}>
-                                <Link to={`/game/${numPlayers}`} style={{ textDecoration: 'none' }}>
+                                <Link to={`./game/${numPlayers}`} style={{ textDecoration: 'none' }}>
                                     <Button
                                         variant="contained"
                                         color="primary"

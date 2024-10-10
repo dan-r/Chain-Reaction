@@ -8,9 +8,9 @@ const App = () => {
     <Router>
       <Routes>
         {/* Player selection page */}
-        <Route path="/" element={<PlayerSelection />} />
+        <Route path="/cr/" element={<PlayerSelection />} />
         {/* Game page, where the number of players is passed as a prop */}
-        <Route path="/game/:players" element={<Game />} />
+        <Route path="/cr/game/:players" element={<Game />} />
       </Routes>
     </Router>
   );
