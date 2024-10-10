@@ -13,25 +13,43 @@
     cursor: pointer;
 }
 
+/* iPhone Regular */
 @media (max-width: 476px) {
-    .cell {
+    .cell-5 {
+        width: 58px;
+        height: 58px;
+    }
+    .cell-container-5 {
+        width: 62px;
+        height: 62px;
+    }
+    .cell-7 {
         width: 40px;
         height: 40px;
     }
-    .cell-container {
+    .cell-container-7 {
         width: 44px;
         height: 44px;
     }
 }
 
+/* iPad and larger */
 @media (min-width: 476px) {
-    .cell {
-        width: 50px;
-        height: 50px;
+    .cell-5 {
+        width: 60px;
+        height: 60px;
     }
-    .cell-container {
-        width: 54px;
-        height: 54px;
+    .cell-container-5 {
+        width: 64px;
+        height: 64px;
+    }
+    .cell-7 {
+        width: 60px;
+        height: 60px;
+    }
+    .cell-container-7 {
+        width: 64px;
+        height: 64px;
     }
 }
 

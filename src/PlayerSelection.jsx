@@ -4,11 +4,15 @@ import { Button, Grid, Typography, Box } from '@mui/material';
 
 const PlayerSelection = () => {
     return (
-        <Box sx={{ padding: 3, textAlign: 'center' }}>
-            <Typography variant="h4" gutterBottom>
-                Chain Reaction
-            </Typography>
-            <Grid container justifyContent="center" alignItems="center">
+        <Box sx={{ padding: 3, textAlign: 'center' }} className={`center-container`}>
+
+            <Grid container justifyContent="center" alignItems="center" direction="column">
+                <Grid item>
+                    <Typography variant="h4" gutterBottom>
+                        Chain Reaction
+                    </Typography>
+                </Grid>
+
                 <Grid item>
                     <Typography variant="h6" gutterBottom>
                         Select number of players

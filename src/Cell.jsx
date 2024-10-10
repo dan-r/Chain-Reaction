@@ -10,7 +10,7 @@ const diceDots = (count) => {
     return dots;
 };
 
-const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, onClick }) => {
+const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, gridSize, onClick }) => {
     const cellRefSprite = useRef(null); // Ref to the cell DOM element
     const cellRefTop = useRef(null);
     const [isAnimating, setIsAnimating] = useState(false); // Local state to track if animation is happening
@@ -59,12 +59,12 @@ const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, o
     }, [count]);
 
     return (
-        <div className={`cell-container`}>
+        <div className={`cell-container-${gridSize}`}>
             {/* Bottom element/sprite (slide animated) */}
             <Paper
                 elevation={4}
                 ref={cellRefSprite}
-                className={`cell`}
+                className={`cell cell-${gridSize}`}
                 style={{
                     backgroundColor: color ? color : '#f0f0f0'
                 }}
@@ -78,7 +78,7 @@ const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, o
                 elevation={0}
                 ref={cellRefTop}
                 // Animate colour changes only for the first turn and for when we are going 4 -> 0 
-                className={`cell ${!initialTurnComplete || delayedCount == 0 ? "cell-animated" : ""}`}
+                className={`cell cell-${gridSize} ${!initialTurnComplete || delayedCount == 0 ? "cell-animated" : ""}`}
                 style={{
                     backgroundColor: disabled ? "rgb(185, 185, 185)" : delayedColor ? delayedColor : '#f0f0f0',
                     transform: "translateY(-100%)",

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Game from './Game';
 import PlayerSelection from './PlayerSelection';
+import './App.css';
 
 const App = () => {
   return (

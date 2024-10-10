@@ -19,8 +19,7 @@ const Game = () => {
     const [initialTurnComplete, setInitialTurnComplete] = useState(false); // Track if initial turns are complete
     const [isAnimating, setIsAnimating] = useState(false); // Track if animations are in progress
 
-    const rows = players === 2 ? 5 : 7;
-    const cols = players === 2 ? 5 : 7;
+    const gridSize = players === 2 ? 5 : 7;
 
     const directions = [
         [0, 1, 'right'], // Right
@@ -31,7 +30,7 @@ const Game = () => {
 
     useEffect(() => {
         setBoard(
-            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null, disabled: false }))
+            Array(gridSize).fill().map(() => Array(gridSize).fill({ count: 0, color: null, explodeDirection: null, disabled: false }))
         );
         setGameOver(false);
         setWinningPlayer(null);
@@ -77,7 +76,7 @@ const Game = () => {
                     const newRow = row + dRow;
                     const newCol = col + dCol;
 
-                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < rows) {
+                    if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
                         newBoard[newRow][newCol].disabled = true;
                     }
                 });
@@ -133,7 +132,7 @@ const Game = () => {
         directions.forEach(([dx, dy, direction]) => {
             const newRow = row + dx;
             const newCol = col + dy;
-            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+            if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
                 moves.push([newRow, newCol, direction]);
             }
         });
@@ -200,7 +199,7 @@ const Game = () => {
 
     const handleRestart = () => {
         setBoard(
-            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null }))
+            Array(gridSize).fill().map(() => Array(gridSize).fill({ count: 0, color: null, explodeDirection: null }))
         );
         setGameOver(false);
         setWinningPlayer(null);
@@ -248,7 +247,7 @@ const Game = () => {
                     zIndex: -1000,
                 }}
             />
-            <Box sx={{ padding: 3 }} className="game-container">
+            <Box sx={{ padding: 3 }} className="center-container">
                 <Grid container spacing={1} justifyContent="center" className="grid">
                     {board.map((row, rowIndex) => (
                         <Grid container item key={rowIndex} spacing={1} justifyContent="center">
@@ -260,6 +259,7 @@ const Game = () => {
                                         explodeDirection={cell.explodeDirection}
                                         initialTurnComplete={initialTurnComplete}
                                         disabled={cell.disabled}
+                                        gridSize={gridSize}
                                         onClick={() => handleClick(rowIndex, colIndex)}
                                     />
                                 </Grid>
