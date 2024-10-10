@@ -248,12 +248,8 @@ const Game = () => {
                     zIndex: -1000,
                 }}
             />
-            <Box sx={{ padding: 3 }}>
-                {/* <Typography variant="h5" gutterBottom>
-                    Current Player: {PLAYER_NAMES[currentPlayer]}
-                </Typography> */}
-
-                <Grid container spacing={1} justifyContent="center" style={{ marginTop: '20px' }}>
+            <Box sx={{ padding: 3 }} className="game-container">
+                <Grid container spacing={1} justifyContent="center" className="grid">
                     {board.map((row, rowIndex) => (
                         <Grid container item key={rowIndex} spacing={1} justifyContent="center">
                             {row.map((cell, colIndex) => (
@@ -271,7 +267,7 @@ const Game = () => {
                         </Grid>
                     ))}
                 </Grid>
-
+    
                 {gameOver && (
                     <Box sx={{ marginTop: '20px', textAlign: 'center' }}>
                         <Typography variant="h6" color="white">
