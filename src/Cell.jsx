@@ -10,7 +10,7 @@ const diceDots = (count) => {
     return dots;
 };
 
-const Cell = ({ count, color, explodeDirection, initialTurnComplete, onClick }) => {
+const Cell = ({ count, color, explodeDirection, initialTurnComplete, disabled, onClick }) => {
     const cellRefSprite = useRef(null); // Ref to the cell DOM element
     const cellRefTop = useRef(null);
     const [isAnimating, setIsAnimating] = useState(false); // Local state to track if animation is happening
@@ -80,7 +80,7 @@ const Cell = ({ count, color, explodeDirection, initialTurnComplete, onClick }) 
                 // Animate colour changes only for the first turn and for when we are going 4 -> 0 
                 className={`cell ${!initialTurnComplete || delayedCount == 0 ? "cell-animated" : ""}`}
                 style={{
-                    backgroundColor: delayedColor ? delayedColor : '#f0f0f0',
+                    backgroundColor: disabled ? "rgb(185, 185, 185)" : delayedColor ? delayedColor : '#f0f0f0',
                     transform: "translateY(-100%)",
                     zIndex: "10"
                 }}

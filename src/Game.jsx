@@ -22,9 +22,16 @@ const Game = () => {
     const rows = players === 2 ? 5 : 7;
     const cols = players === 2 ? 5 : 7;
 
+    const directions = [
+        [0, 1, 'right'], // Right
+        [0, -1, 'left'],  // Left
+        [1, 0, 'down'],   // Down
+        [-1, 0, 'up'],    // Up
+    ];
+
     useEffect(() => {
         setBoard(
-            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null }))
+            Array(rows).fill().map(() => Array(cols).fill({ count: 0, color: null, explodeDirection: null, disabled: false }))
         );
         setGameOver(false);
         setWinningPlayer(null);
@@ -42,7 +49,7 @@ const Game = () => {
         // Check if it's the first move (free placement)
         if (placedCounters[currentPlayer] < 1) {
             // Allow placing on an empty cell or their own cell
-            if (cell.color && cell.color !== currentColor) return; // Prevent placing on another player's cell
+            if (cell.disabled || (cell.color && cell.color !== currentColor)) return; // Prevent placing on another player's cell
             const newBoard = JSON.parse(JSON.stringify(board)); // Deep copy of the board
             newBoard[row][col].count = 3;
             newBoard[row][col].color = currentColor;
@@ -57,6 +64,23 @@ const Game = () => {
             // Check if both players have placed their first counters
             if (updatedPlacedCounters.every(count => count > 0)) {
                 setInitialTurnComplete(true); // Both players have played
+
+                // Enable all cells again
+                newBoard.forEach(row => {
+                    row.forEach(cell => {
+                        cell.disabled = false;
+                    });
+                });
+            } else {
+                // Disable adjacent cells until end of first round
+                directions.forEach(([dRow, dCol]) => {
+                    const newRow = row + dRow;
+                    const newCol = col + dCol;
+
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < rows) {
+                        newBoard[newRow][newCol].disabled = true;
+                    }
+                });
             }
 
             setCurrentPlayer((currentPlayer + 1) % players);
@@ -101,13 +125,6 @@ const Game = () => {
         board[row][col].count = 0;
         board[row][col].color = null;
 
-        const directions = [
-            [0, 1, 'right'], // Right
-            [0, -1, 'left'],  // Left
-            [1, 0, 'down'],   // Down
-            [-1, 0, 'up'],    // Up
-        ];
-
         const explosionQueue = [];
 
         let moves = [];
@@ -124,6 +141,7 @@ const Game = () => {
 
         // Sequentially handle each explosion with animation
         const processExplosion = (index) => {
+            console.log(explosionQueue);
             if (index >= explosionQueue.length) {
                 onComplete(); // Call completion callback after all explosions are done
                 return;
@@ -143,7 +161,7 @@ const Game = () => {
                     } else {
                         processExplosion(index + 1);
                     }
-                }, 1000); // Delay to sync with the animation (500ms)
+                }, 550); // Delay to sync with the animation (500ms)
 
             }
 
@@ -213,7 +231,7 @@ const Game = () => {
 
     const playerLocationPath = () => {
         const pathname = useLocation().pathname;
-        return pathname.substring(0, pathname.lastIndexOf('/', pathname.lastIndexOf('/')-1));
+        return pathname.substring(0, pathname.lastIndexOf('/', pathname.lastIndexOf('/') - 1));
     }
 
     return (
@@ -245,6 +263,7 @@ const Game = () => {
                                         color={cell.color}
                                         explodeDirection={cell.explodeDirection}
                                         initialTurnComplete={initialTurnComplete}
+                                        disabled={cell.disabled}
                                         onClick={() => handleClick(rowIndex, colIndex)}
                                     />
                                 </Grid>
