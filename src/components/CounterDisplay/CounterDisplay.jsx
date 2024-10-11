@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { PLAYER_COLORS } from './const';
+import { PLAYER_COLORS } from '@const';
 
 const CounterDisplay = ({ playerCounters, players }) => {
     return (

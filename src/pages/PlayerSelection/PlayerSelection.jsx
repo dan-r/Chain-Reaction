@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Grid, Typography, Box } from '@mui/material';
-import { PLAYER_COLORS } from './const';
+import { PLAYER_COLORS } from '@const';
 
 const PlayerSelection = () => {
     const [color, setColor] = useState(PLAYER_COLORS[0]);

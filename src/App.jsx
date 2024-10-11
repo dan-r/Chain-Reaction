@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { motion } from "framer-motion";
-import Game from './Game';
-import PlayerSelection from './PlayerSelection';
+import Game from '@pages/Game';
+import PlayerSelection from '@pages/PlayerSelection';
 import './App.css';
 
 const AnimationLayout = () => {

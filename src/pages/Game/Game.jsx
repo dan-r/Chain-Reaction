@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
-import Cell from './Cell';
+import Cell from '@components/Cell';
 import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
-import { PLAYER_COLORS, PLAYER_NAMES } from './const';
-import CounterDisplay from './CounterDisplay';
-import { darkenHex } from './utils';
+import { PLAYER_COLORS, PLAYER_NAMES } from '@const';
+import CounterDisplay from '@components/CounterDisplay';
+import { darkenHex } from '@utils';
 
 const Game = () => {
     const { players: playerCount } = useParams();
