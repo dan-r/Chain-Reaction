@@ -6,7 +6,7 @@ import './Game.css';
 import { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES, DIRECTIONS } from '@const';
 import CounterDisplay from '@components/CounterDisplay';
 import { darkenHex } from '@utils';
-import { makeAIMove } from './AI';
+import { getAIMove } from './AI';
 
 const Game = () => {
     const { players: playerCount, mode: gameModeName } = useParams();
@@ -45,7 +45,7 @@ const Game = () => {
     useEffect(() => {
         if (gameMode == GAME_MODES.COMPUTER && currentPlayer == 1) {
             setTimeout(() => {
-                const move = makeAIMove(board, gridSize, placedCounters);
+                const move = getAIMove(board, gridSize, placedCounters, 0);
                 makeMove(move.row, move.col);
             }, 1000);
         }
