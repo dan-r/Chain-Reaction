@@ -40,6 +40,10 @@ const Game = () => {
         if (gameMode === null || players > gameMode.maxPlayers) {
             navigate(BASE_PATH);
         }
+
+        // Randomly choose the starting player and show animation
+        const randomPlayer = Math.floor(Math.random() * players);
+        setCurrentPlayer(randomPlayer);
     }, [players, gameMode]);
 
     useEffect(() => {
@@ -234,6 +238,10 @@ const Game = () => {
         setInitialTurnComplete(false);
         setIsAnimating(false);
         setScores(new Array(players).fill(0));
+
+        // Randomly choose the next starting player
+        const randomPlayer = Math.floor(Math.random() * players);
+        setCurrentPlayer(randomPlayer);
     };
 
     return (
