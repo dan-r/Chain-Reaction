@@ -21,6 +21,7 @@ const Game = () => {
     const [initialTurnComplete, setInitialTurnComplete] = useState(false); // Track if initial turns are complete
     const [isAnimating, setIsAnimating] = useState(false); // Track if animations are in progress
     const [scores, setScores] = useState(new Array(players).fill(0));
+    const [isChoosingPlayer, setIsChoosingPlayer] = useState(true); // Track if we're choosing the starting player
 
     const navigate = useNavigate();
 
@@ -41,9 +42,7 @@ const Game = () => {
             navigate(BASE_PATH);
         }
 
-        // Randomly choose the starting player and show animation
-        const randomPlayer = Math.floor(Math.random() * players);
-        setCurrentPlayer(randomPlayer);
+        playerRoll();
     }, [players, gameMode]);
 
     useEffect(() => {
@@ -55,6 +54,30 @@ const Game = () => {
         }
     }, [currentPlayer]);
 
+
+    const playerRoll = () => {
+        const randomPlayer = Math.floor(Math.random() * players);
+        let elapsed = 2000;
+
+        let playerIndex = randomPlayer;
+
+        setIsChoosingPlayer(true); // Start the animation process
+
+        setTimeout(() => {
+            setIsChoosingPlayer(false); // End the animation process
+        }, elapsed);
+
+        while (elapsed >= 0) {
+            setTimeout((i) => {
+                setCurrentPlayer(i)
+            }, elapsed, playerIndex);
+
+            playerIndex = (playerIndex + 1) % players;
+            console.log(playerIndex)
+            elapsed -= 500;
+        }
+    }
+
     const handleClick = (row, col) => {
         if (gameMode != GAME_MODES.COMPUTER || (gameMode == GAME_MODES.COMPUTER && currentPlayer == 0)) {
             makeMove(row, col);
@@ -62,7 +85,7 @@ const Game = () => {
     };
 
     const makeMove = (row, col) => {
-        if (gameOver || isAnimating) return; // Block user input during animations
+        if (gameOver || isAnimating || isChoosingPlayer) return; // Block user input during animations
 
         const cell = board[row][col];
         const currentColor = PLAYER_COLORS[currentPlayer];
@@ -240,8 +263,7 @@ const Game = () => {
         setScores(new Array(players).fill(0));
 
         // Randomly choose the next starting player
-        const randomPlayer = Math.floor(Math.random() * players);
-        setCurrentPlayer(randomPlayer);
+        playerRoll();
     };
 
     return (
@@ -258,6 +280,20 @@ const Game = () => {
                     zIndex: -1000,
                 }}
             />
+            {isChoosingPlayer && (
+                <Typography variant="h4" align="center" sx={{
+
+                    position: 'fixed',
+                    top: 30,
+                    fontSize: "1.5em",
+                    left: "50%",
+                    width: "100%",
+                    transform: "translate(-50%, -50%)",
+                    color: "white"
+                }}>
+                    Choosing Starting Player...
+                </Typography>
+            )}
             <CounterDisplay playerCounters={scores} players={players} />
             <Box sx={{ padding: 3 }} className="center-container">
                 <Grid container spacing={1} justifyContent="center" className="grid">
