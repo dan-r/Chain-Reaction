@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import Cell from '@components/Cell';
 import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
-import { PLAYER_COLORS, PLAYER_NAMES } from '@const';
+import { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES } from '@const';
 import CounterDisplay from '@components/CounterDisplay';
 import { darkenHex } from '@utils';
 
 const Game = () => {
-    const { players: playerCount } = useParams();
+    const { players: playerCount, mode: gameModeName } = useParams();
     const players = parseInt(playerCount, 10);
+    const gameMode = GAME_MODES[gameModeName.toUpperCase()];
 
     const [currentPlayer, setCurrentPlayer] = useState(0);
     const [board, setBoard] = useState([]);
@@ -19,6 +20,8 @@ const Game = () => {
     const [initialTurnComplete, setInitialTurnComplete] = useState(false); // Track if initial turns are complete
     const [isAnimating, setIsAnimating] = useState(false); // Track if animations are in progress
     const [scores, setScores] = useState(new Array(players).fill(0));
+
+    const navigate = useNavigate();
 
     const gridSize = players === 2 ? 5 : 7;
 
@@ -39,7 +42,11 @@ const Game = () => {
         setInitialTurnComplete(false); // Reset the initial turn flag
         setIsAnimating(false); // Reset animation state
         setScores(new Array(players).fill(0));
-    }, [players]);
+
+        if (gameMode === null || players > gameMode.maxPlayers) {
+            navigate(BASE_PATH);
+        }
+    }, [players, gameMode]);
 
     const handleClick = (row, col) => {
         if (gameOver || isAnimating) return; // Block user input during animations
@@ -220,11 +227,6 @@ const Game = () => {
         setScores(new Array(players).fill(0));
     };
 
-    const playerLocationPath = () => {
-        const pathname = useLocation().pathname;
-        return pathname.substring(0, pathname.lastIndexOf('/', pathname.lastIndexOf('/') - 1));
-    }
-
     return (
         <>
             <Box
@@ -269,7 +271,7 @@ const Game = () => {
                         </Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Link to={playerLocationPath()}>
+                        <Link to={BASE_PATH}>
                             <Button color="info">
                                 Change Players
                             </Button>

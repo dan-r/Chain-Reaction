@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Game from '@pages/Game';
 import PlayerSelection from '@pages/PlayerSelection';
 import './App.css';
+import { BASE_PATH } from '@const';
 
 const AnimationLayout = () => {
   const { pathname } = useLocation();
@@ -42,11 +43,11 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route element={<AnimationLayout />}>
+        <Route path={BASE_PATH} element={<AnimationLayout />}>
           {/* Player selection page */}
-          <Route path="/cr/" element={<PlayerSelection />} />
+          <Route index element={<PlayerSelection />} />
           {/* Game page, where the number of players is passed as a prop */}
-          <Route path="/cr/game/:players" element={<Game />} />
+          <Route path="game/:mode/:players" element={<Game />} />
         </Route>
       </Routes>
     </Router>

@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path';
+import { BASE_PATH } from './src/const';
 
 export default defineConfig({
-    base: './',
+    base: BASE_PATH,
     plugins: [react()],
     server: {
         open: false,
