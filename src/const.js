@@ -14,4 +14,11 @@ const GAME_MODES = {
     }
 }
 
-export { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES };
+const DIRECTIONS = [
+    [0, 1, 'right'],
+    [0, -1, 'left'],
+    [1, 0, 'down'],
+    [-1, 0, 'up']
+];
+
+export { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES, DIRECTIONS };

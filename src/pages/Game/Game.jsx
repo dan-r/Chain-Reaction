@@ -3,9 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Cell from '@components/Cell';
 import { Button, Grid, Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './Game.css';
-import { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES } from '@const';
+import { BASE_PATH, PLAYER_COLORS, PLAYER_NAMES, GAME_MODES, DIRECTIONS } from '@const';
 import CounterDisplay from '@components/CounterDisplay';
 import { darkenHex } from '@utils';
+import { makeAIMove } from './AI';
 
 const Game = () => {
     const { players: playerCount, mode: gameModeName } = useParams();
@@ -25,13 +26,6 @@ const Game = () => {
 
     const gridSize = players === 2 ? 5 : 7;
 
-    const directions = [
-        [0, 1, 'right'], // Right
-        [0, -1, 'left'],  // Left
-        [1, 0, 'down'],   // Down
-        [-1, 0, 'up'],    // Up
-    ];
-
     useEffect(() => {
         setBoard(
             Array(gridSize).fill().map(() => Array(gridSize).fill({ count: 0, color: null, explodeDirection: null, disabled: false }))
@@ -48,7 +42,22 @@ const Game = () => {
         }
     }, [players, gameMode]);
 
+    useEffect(() => {
+        if (gameMode == GAME_MODES.COMPUTER && currentPlayer == 1) {
+            setTimeout(() => {
+                const move = makeAIMove(board, gridSize, placedCounters);
+                makeMove(move.row, move.col);
+            }, 1000);
+        }
+    }, [currentPlayer]);
+
     const handleClick = (row, col) => {
+        if (gameMode != GAME_MODES.COMPUTER || (gameMode == GAME_MODES.COMPUTER && currentPlayer == 0)) {
+            makeMove(row, col);
+        }
+    };
+
+    const makeMove = (row, col) => {
         if (gameOver || isAnimating) return; // Block user input during animations
 
         const cell = board[row][col];
@@ -81,7 +90,7 @@ const Game = () => {
                 });
             } else {
                 // Disable adjacent cells until end of first round
-                directions.forEach(([dRow, dCol]) => {
+                DIRECTIONS.forEach(([dRow, dCol]) => {
                     const newRow = row + dRow;
                     const newCol = col + dCol;
 
@@ -140,7 +149,7 @@ const Game = () => {
         let moves = [];
 
         // Collect all neighboring cells to explode into
-        directions.forEach(([dx, dy, direction]) => {
+        DIRECTIONS.forEach(([dx, dy, direction]) => {
             const newRow = row + dx;
             const newCol = col + dy;
             if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
